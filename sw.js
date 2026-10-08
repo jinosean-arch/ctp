@@ -1,5 +1,5 @@
 // Khi sửa nội dung app, đổi số phiên bản này để máy cũ nhận bản mới.
-const VERSION = 'ctp-v1';
+const VERSION = 'ctp-v3';
 const FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
