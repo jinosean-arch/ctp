@@ -110,17 +110,20 @@ textarea{width:100%;font:12px/1.3 monospace;color:var(--tx);background:var(--car
 .cv-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cvb{font-size:14px;border:0;background:rgba(255,255,255,.93);color:#12306b;font:inherit;font-weight:700;border-radius:14px;padding:12px 6px;min-height:46px}
 .cv-act .cta{margin-bottom:10px}
+.cr{text-align:center;font-size:16px;font-weight:500;color:var(--mu);margin-top:18px;letter-spacing:.02em}
+.cover .cr{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.65);margin-top:12px}
 </style>
 </head>
 <body>
 <div id="home"><div class="cover"><button class="tg" id="theme" type="button" aria-label="Sáng/tối"></button>
 <div class="cv-act"><button class="cta" id="newTrip" type="button">＋ Tạo chuyến công tác</button>
-<div class="cv-row"><button class="cvb" id="toList" type="button">📂 Chuyến đã lưu <span id="cnt"></span></button><button class="cvb" id="openMenu" type="button">📋 Copy / Dán dữ liệu</button></div></div></div></div>
+<div class="cv-row"><button class="cvb" id="toList" type="button">📂 Chuyến đã lưu <span id="cnt"></span></button><button class="cvb" id="openMenu" type="button">📋 Copy / Dán dữ liệu</button></div><div class="cr">© Phòng TDLĐ - Trung tâm CNTD</div></div></div></div>
 <div id="list" hidden><div class="hero slim"><div class="hero-in"><button class="wb" id="backList" type="button" aria-label="Quay lại">←</button><div><h1>Chuyến đã lưu</h1></div></div></div>
 <div class="wrap" style="padding-bottom:30px">
 <button class="cta" id="newTrip2" type="button">＋ Tạo chuyến công tác</button>
 <div class="ftabs"><button class="ftab" data-f="all" type="button">Tất cả</button><button class="ftab" data-f="run" type="button">Đang diễn ra</button><button class="ftab" data-f="done" type="button">Đã kết thúc</button></div>
 <div id="hlist"></div>
+<div class="cr">© Phòng TDLĐ - Trung tâm CNTD</div>
 </div></div>
 <div id="err" style="display:none;background:#c62e2e;color:#fff;padding:8px 12px;font-size:12px;word-break:break-all"></div>
 <div id="trip" hidden><div class="hero slim"><div class="hero-in"><button class="wb" id="back" type="button" aria-label="Quay lại">←</button><div style="min-width:0"><h1 id="ttitle">Chuyến công tác</h1><p id="tsub"></p></div></div></div>
@@ -165,6 +168,7 @@ textarea{width:100%;font:12px/1.3 monospace;color:var(--tx);background:var(--car
 <button class="btn" id="copy">📤 Chia sẻ</button>
 <button class="btn" id="openMenu2">📋 Copy / Dán dữ liệu</button>
 </div>
+<div class="cr">© Phòng TDLĐ - Trung tâm CNTD</div>
 </div>
 
 <div class="bar"><div class="bar-in">
