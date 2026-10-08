@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Phòng TDLĐ - CNTD - VTV</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0f2f70">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Công tác phí">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{--bg:#1b2434;--card:#25314a;--tx:#f1f5fb;--mu:#a9b7cc;--bd:#38476a;--pr:#7db2ff;--pr2:#3b82f6;--soft:#2f4166;--ok:#5fd49a;--no:#ff8a8a;color-scheme:dark;box-sizing:border-box}
 :root[data-theme="light"]{--bg:#eef2f8;--card:#fff;--tx:#172033;--mu:#66738a;--bd:#e1e7f0;--pr:#1558c8;--pr2:#2f80ed;--soft:#e8f0fd;--ok:#12805c;--no:#c62e2e;color-scheme:light}
@@ -291,6 +298,7 @@ function init(){
  buildDays();render();
 }
 init();
+try{if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js')}catch(e){}
 </script>
 </body>
 </html>
