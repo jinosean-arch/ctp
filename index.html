@@ -135,6 +135,8 @@ textarea.ta{min-height:60px}
 .pr .pl{margin-top:3px;font-size:13px}
 .oi{grid-template-columns:1fr 1.3fr auto;margin-top:6px}
 .cp[data-oadd]{width:100%;margin-top:8px}
+#ptype.seg{grid-template-columns:1.6fr 1fr 1.1fr}
+#ptype button{font-size:13px;padding:9px 2px}
 </style>
 </head>
 <body>
@@ -177,9 +179,9 @@ textarea.ta{min-height:60px}
 <h2>🗓️ Chi tiêu từng ngày</h2>
 <div id="days"></div>
 </div>
-<div class="card"><h2>📒 Quán ăn, khách sạn &amp; ghi chú</h2>
+<div class="card"><h2>📒 Liên hệ công việc &amp; địa điểm</h2>
 <div id="plist"></div>
-<button class="btn" id="addPlace" type="button" style="width:100%;margin-top:8px">＋ Thêm quán ăn / khách sạn / ghi chú</button></div>
+<button class="btn" id="addPlace" type="button" style="width:100%;margin-top:8px">＋ Thêm liên hệ / quán ăn / khách sạn</button></div>
 
 <div class="card">
 <h2>📊 Tổng kết</h2>
@@ -208,10 +210,10 @@ textarea.ta{min-height:60px}
 <div class="sub" style="margin-top:0">Chạm giữ vào ô bên dưới, chọn <b>Chọn tất cả</b> rồi <b>Copy</b>, sau đó dán vào Zalo.</div>
 <textarea id="ctext" readonly style="min-height:260px;font:14px/1.4 -apple-system,Arial,sans-serif"></textarea></div></div>
 <div class="sheet" id="psheet" hidden><div class="sheet-in"><div class="sh-h"><b id="ptitle">📍 Thêm địa điểm</b><button class="ib" id="closeP" type="button">✕</button></div>
-<div class="seg s3" id="ptype"><button type="button" data-t="an" class="on">🍜 Quán ăn</button><button type="button" data-t="ks">🏨 Khách sạn</button><button type="button" data-t="gc">📝 Ghi chú</button></div>
+<div class="seg s3" id="ptype"><button type="button" data-t="lienhe" class="on">👤 Liên hệ công việc</button><button type="button" data-t="an">🍜 Quán ăn</button><button type="button" data-t="ks">🏨 Khách sạn</button></div>
 <label id="plName">Tên</label><input id="pname" maxlength="80" placeholder="VD: Quán Bà Mai" autocomplete="off">
-<div id="pExtra"><label>Địa chỉ</label><input id="paddr" maxlength="160" placeholder="Số nhà, đường, quận…" autocomplete="off">
-<label>Số điện thoại</label><input id="pphone" type="tel" inputmode="tel" maxlength="30" placeholder="090…" autocomplete="off"></div>
+<div id="pAddrBox"><label>Địa chỉ</label><input id="paddr" maxlength="160" placeholder="Số nhà, đường, quận…" autocomplete="off"></div>
+<div id="pPhoneBox"><label>Số điện thoại</label><input id="pphone" type="tel" inputmode="tel" maxlength="30" placeholder="090…" autocomplete="off"></div>
 <label id="plNote">Ghi chú</label><textarea id="pnote" class="ta" rows="2" maxlength="500" placeholder="VD: ăn ngon, 50k/suất"></textarea>
 <button class="cta" id="okP" type="button" style="margin-top:12px">Lưu</button><div class="sub" id="pmsg"></div></div></div>
 <div class="sheet" id="nsheet" hidden><div class="sheet-in"><div class="sh-h"><b>📍 Chuyến đi đâu?</b><button class="ib" id="closeN" type="button">✕</button></div>
@@ -441,27 +443,28 @@ function pie(L){
  let acc=0;const seg=v.map((x,i)=>{const p=acc/tot*100;acc+=x;return `${C[i][1]} ${p}% ${acc/tot*100}%`}).join(',');
  $('pie').innerHTML=`<div class="pw"><div class="donut" style="background:conic-gradient(${seg})"><div class="hole"><small>Tổng chi</small><b>${fmt(tot)}</b></div></div><div class="lg">${v.map((x,i)=>x?`<div><i style="background:${C[i][1]}"></i>${C[i][0]}<b>${Math.round(x/tot*100)}%</b></div>`:'').join('')}</div></div>`;
 }
-const ptt=p=>p.type==='an'?'Quán ăn '+p.name:p.type==='ks'?'Khách sạn '+p.name:p.type==='gc'?'Ghi chú: '+p.name:p.name;
-const PI={an:'🍜',ks:'🏨',khac:'📍',gc:'📝'},PL={an:'Quán ăn',ks:'Khách sạn',khac:'Địa điểm',gc:'Ghi chú'};
+const ptt=p=>p.type==='an'?'Quán ăn '+p.name:p.type==='ks'?'Khách sạn '+p.name:p.type==='gc'?'Ghi chú: '+p.name:p.type==='lienhe'?'Liên hệ: '+p.name:p.name;
+const PI={an:'🍜',ks:'🏨',khac:'📍',gc:'📝',lienhe:'👤'},PL={an:'Quán ăn',ks:'Khách sạn',khac:'Địa điểm',gc:'Ghi chú'};
 let ptype='an',pedit=null;
 const phay=p=>[p.name,p.addr,p.phone,p.note].join(' ').toLowerCase();
 function matchLine(t,q){const ms=(t.places||[]).filter(p=>phay(p).includes(q));return ms.length?`<div class="mt">🔎 ${ms.map(p=>esc(p.name)+(p.phone?' · '+esc(p.phone):'')).join('; ')}</div>`:''}
 function plist(){
  if(st.notes&&String(st.notes).trim()){st.places=st.places||[];st.places.push({id:uid(),type:'gc',name:'Ghi chú',addr:'',phone:'',note:st.notes});st.notes='';save()}
- const L=st.places||[];
+ const ORD={lienhe:0,gc:1,an:2,ks:3},od=t=>t in ORD?ORD[t]:9,L=(st.places||[]).slice().sort((a,b)=>od(a.type)-od(b.type));
  $('plist').innerHTML=L.length?L.map(p=>`<div class="pc"><div class="pt"><b>${PI[p.type]||'📍'} ${esc(ptt(p))}</b><span class="pa"><button class="ib sm" data-pe="${p.id}" type="button" aria-label="Sửa">✏️</button><button class="ib sm" data-pd="${p.id}" type="button" aria-label="Xóa">🗑</button></span></div>${p.addr?`<div class="pl">📍 Địa chỉ: ${esc(p.addr)} · <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.addr+(p.name?' '+p.name:''))}" target="_blank" rel="noopener">Chỉ đường</a></div>`:''}${p.phone?`<div class="pl">📞 Điện thoại: <a href="tel:${esc(p.phone.replace(/[^+\d]/g,''))}">${esc(p.phone)}</a></div>`:''}${p.note?`<div class="pl" style="white-space:pre-wrap">${p.type==='gc'?'':'📝 Ghi chú: '}${esc(p.note)}</div>`:''}</div>`).join(''):'<div class="sub">Chưa có gì. Bấm nút bên dưới để thêm.</div>';
 }
 function setPT(){document.querySelectorAll('#ptype button').forEach(b=>b.classList.toggle('on',b.dataset.t===ptype));
- const g=ptype==='gc',T=({an:['Tên quán ăn','VD: Quán Bà Mai','Ghi chú','VD: món ngon, 50k/suất','quán ăn'],ks:['Tên khách sạn','VD: New Hotel','Ghi chú','VD: 600k/phòng, có ăn sáng','khách sạn'],gc:['Tiêu đề ghi chú','VD: Vị trí làm việc','Nội dung ghi chú','VD: Tầng 3 tòa nhà A, gặp anh Nam','ghi chú']})[ptype]||['Tên','','Ghi chú','','địa điểm'];
- $('pExtra').hidden=g;$('plName').textContent=T[0];$('pname').placeholder=T[1];$('plNote').textContent=T[2];$('pnote').placeholder=T[3];$('ptitle').textContent=(pedit?'✏️ Sửa ':'＋ Thêm ')+T[4]}
-function openP(p){pedit=p?p.id:null;ptype=p?p.type:'an';$('ptitle').textContent=p?'✏️ Sửa địa điểm':'📍 Thêm địa điểm';$('pname').value=p?p.name:'';$('paddr').value=p?p.addr||'':'';$('pphone').value=p?p.phone||'':'';$('pnote').value=p?p.note||'':'';$('pmsg').textContent='';setPT();$('psheet').hidden=false}
+ const T=({gc:['Tiêu đề ghi chú','VD: Vị trí làm việc','Nội dung ghi chú','VD: Tầng 3 tòa nhà A, gặp Nguyễn Văn A','ghi chú'],lienhe:['Họ tên liên hệ','VD: Nguyễn Văn A','Ghi chú (chức vụ, đơn vị)','VD: Trưởng phòng kỹ thuật, Cáp quang VNPT Mỹ Đình, Hà Nội','liên hệ công việc'],an:['Tên quán ăn','VD: Quán Bà Mai','Ghi chú','VD: món ngon, 50k/suất','quán ăn'],ks:['Tên khách sạn','VD: New Hotel','Ghi chú','VD: 600k/phòng, có ăn sáng','khách sạn']})[ptype]||['Tên','','Ghi chú','','địa điểm'];
+ $('pAddrBox').hidden=(ptype==='gc'||ptype==='lienhe');$('pPhoneBox').hidden=(ptype==='gc');
+ $('plName').textContent=T[0];$('pname').placeholder=T[1];$('plNote').textContent=T[2];$('pnote').placeholder=T[3];$('ptitle').textContent=(pedit?'✏️ Sửa ':'＋ Thêm ')+T[4]}
+function openP(p){pedit=p?p.id:null;ptype=p?p.type:'lienhe';$('ptitle').textContent=p?'✏️ Sửa địa điểm':'📍 Thêm địa điểm';$('pname').value=p?p.name:'';$('paddr').value=p?p.addr||'':'';$('pphone').value=p?p.phone||'':'';$('pnote').value=p?p.note||'':'';$('pmsg').textContent='';setPT();$('psheet').hidden=false}
 $('addPlace').onclick=()=>openP(null);
 $('closeP').onclick=()=>{$('psheet').hidden=true};
 $('psheet').addEventListener('click',e=>{if(e.target===$('psheet'))$('psheet').hidden=true});
 $('ptype').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b){ptype=b.dataset.t;setPT()}});
 $('okP').onclick=()=>{
  const name=$('pname').value.trim();if(!name){$('pmsg').textContent='Vui lòng nhập tên.';return}
- const o={type:ptype,name,addr:ptype==='gc'?'':$('paddr').value.trim(),phone:ptype==='gc'?'':$('pphone').value.trim(),note:$('pnote').value.trim()};
+ const o={type:ptype,name,addr:(ptype==='gc'||ptype==='lienhe')?'':$('paddr').value.trim(),phone:ptype==='gc'?'':$('pphone').value.trim(),note:$('pnote').value.trim()};
  st.places=st.places||[];
  if(pedit){const i=st.places.findIndex(x=>x.id===pedit);if(i>=0)st.places[i]=Object.assign(st.places[i],o)}else st.places.push(Object.assign({id:uid()},o));
  save();plist();$('psheet').hidden=true;
