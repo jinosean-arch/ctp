@@ -344,16 +344,22 @@ function payText(){
  const ln=[];
  ln.push('💼 CÔNG TÁC PHÍ'+(st.name?' – '+st.name:''));
  ln.push('📅 '+vn(st.start)+' → '+vn(st.end)+' ('+c.days+' ngày '+c.nights+' đêm) · '+c.n+' người','');
- ln.push('🏢 TRUNG TÂM CHI TRẢ');
- ln.push('• Phụ cấp lưu trú: '+NF.format(PC)+' × '+c.n+' người × '+c.days+' ngày = '+fmt(c.pc));
- ln.push(hd?'• Tiền phòng (theo hóa đơn): '+fmt(c.room):'• Tiền phòng khoán: '+NF.format(KHOAN)+' × '+c.n+' người × '+c.nights+' đêm = '+fmt(c.room));
- ln.push('➜ Tổng được chi trả: '+fmt(c.tt),'');
- ln.push('🧾 ĐÃ CHI');
- [['Tiền ăn',an],['Liên hoan',lh],['Khách sạn',ks],['Chi phí khác',ot]].forEach(function(r){if(r[1])ln.push('• '+r[0]+': '+fmt(r[1]))});
- ln.push('➜ Tổng đã chi: '+fmt(c.chi),'');
+ const tc=[];
+ if(c.pc)tc.push('• Phụ cấp lưu trú: '+NF.format(PC)+' × '+c.n+' người × '+c.days+' ngày = '+fmt(c.pc));
+ if(c.room)tc.push(hd?'• Tiền phòng (theo hóa đơn): '+fmt(c.room):'• Tiền phòng khoán: '+NF.format(KHOAN)+' × '+c.n+' người × '+c.nights+' đêm = '+fmt(c.room));
+ if(tc.length){ln.push('🏢 TRUNG TÂM CHI TRẢ');tc.forEach(function(r){ln.push(r)});ln.push('➜ Tổng được chi trả: '+fmt(c.tt),'')}
+ const body=[];
+ c.L.forEach(function(x,i){const o=st.days[x]||{},rows=[];
+  [['Ăn sáng','sang'],['Ăn trưa','trua'],['Ăn tối','toi'],['Liên hoan','lh'],['Khách sạn','ks']].forEach(function(r){if(+o[r[1]])rows.push('   • '+r[0]+': '+fmt(+o[r[1]]))});
+  (o.other||[]).forEach(function(it){if(+it.amt)rows.push('   • Chi phí khác'+(it.note?' ('+it.note+')':'')+': '+fmt(+it.amt))});
+  if(rows.length){body.push('📌 Ngày '+(i+1)+' ('+vn(x)+') – '+fmt(dsum(o)));rows.forEach(function(r){body.push(r)})}
+ });
+ if(body.length){ln.push('🧾 CHI TIÊU TỪNG NGÀY');body.forEach(function(r){ln.push(r)});ln.push('➜ Tổng đã chi: '+fmt(c.chi),'')}
  ln.push('💵 '+(c.left<0?'CHI VƯỢT MỨC: ':'CÒN LẠI: ')+fmt(Math.abs(c.left)));
  ln.push('👤 '+(c.left<0?'MỖI NGƯỜI BÙ: ':'MỖI NGƯỜI: ')+fmt(Math.abs(c.each)));
- if(c.xang)ln.push('','⛽ Tiền xăng (tính riêng): '+fmt(c.xang));
+ if(c.xang){ln.push('','⛽ TIỀN XĂNG (tính riêng)');
+  c.L.forEach(function(x,i){const v=+((st.days[x]||{}).xang)||0;if(v)ln.push('   • Ngày '+(i+1)+' ('+vn(x)+'): '+fmt(v))});
+  ln.push('➜ Tổng tiền xăng: '+fmt(c.xang))}
  return ln.join('\n');
 }
 function showCopy(t){$('ctext').value=t;$('csheet').hidden=false;try{$('ctext').select()}catch(e){}}
